@@ -10,7 +10,7 @@ class UtilisateurService {
     }
 
     async update(id, data) {
-        return await Utilisateur.findByIdAndUpdate(id, data, { new: true }).select("-mot_de_passes");
+        return await Utilisateur.findByIdAndUpdate(id, data, { new: true }).select("-mot_de_passe");
     }
 
     async delete(id) {
