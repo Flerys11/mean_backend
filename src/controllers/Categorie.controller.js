@@ -25,7 +25,7 @@ class CategorieController {
         try {
             const id = req.params.id;
             const categorie = await categorieService.findById(id)
-            if (!categorie) return res.status(404).json({message: 'Categoria n \'  existe pas '});
+            if (!categorie) return res.status(404).json({message: 'Categorie n \'  existe pas '});
             res.status(201).json(categorie)
 
         }catch (e){
@@ -48,7 +48,7 @@ class CategorieController {
         try {
             const id = req.params.id;
             const categorie = await categorieService.delete(id)
-            if (!categorie) return res.status(404).json({message: 'Categoria n \' existe pas '});
+            if (!categorie) return res.status(404).json({message: 'Categorie n \' existe pas '});
             res.json("Categorie supprimer");
         } catch (e){
             next(e);
