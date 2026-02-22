@@ -11,7 +11,6 @@ app.use(express.json());
 app.use("/auth", require("./routes/auth.route"));
 app.use("/utilisateur", require("./routes/utilisateur.route"));
 app.use("/categorie", require("./routes/Categorie.route"));
-app.use("/article", require("./routes/article.route"));
 
 app.use(require("./middlewares/erreur.middlewares"));
 
