@@ -31,11 +31,20 @@ class AuthService {
 
     async login(email, mot_de_passe) {
 
-        const utilisateur = await Utilisateur.findOne({ email });
-        if (!utilisateur) throw new Error("Invalid credentials");
+        const utilisateur = await Utilisateur
+            .findOne({ email })
+            .populate("boutique");
+
+        if (!utilisateur)
+            throw new Error("Invalid credentials");
+
+        if (!utilisateur.boutique || utilisateur.boutique.validate === false) {
+            throw new Error("Votre boutique n'est pas encore validée");
+        }
 
         const valid = await bcrypt.compare(mot_de_passe, utilisateur.mot_de_passe);
-        if (!valid) throw new Error("Invalid credentials");
+        if (!valid)
+            throw new Error("Invalid credentials");
 
         const token = jwt.sign(
             { id: utilisateur._id, role: utilisateur.role },
