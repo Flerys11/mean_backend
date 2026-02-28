@@ -1,13 +1,10 @@
 const Stock = require("../models/Stock.model");
+const paginationService = require("./Pagination.service");
 const mongoose = require('mongoose');
 
 class StockService {
-    async create(data) {
-        return await Stock.create(data);
-    }
-
-    async getStockGlobal() {
-        return await Stock.aggregate([
+    #getAggregationPipeline() {
+        return [
             {
                 $group: {
                     _id: "$id_article",
@@ -30,12 +27,23 @@ class StockService {
                 $project: {
                     article_nom: "$article.nom_article",
                     article_prix: "$article.prix",
+                    article_description: "$article.description",
+                    article_photo: "$article.photo",
                     stock_restant: {
                         $subtract: ["$total_entree", "$total_sortie"]
                     }
                 }
             }
-        ]);
+        ];
+    }
+
+    async create(data) {
+        return await Stock.create(data);
+    }
+
+    async getStockGlobal(options = {}) {
+        const pipeline = this.#getAggregationPipeline();
+        return await paginationService.getPaginatedAggregation(Stock, pipeline, options, 10);
     }
 
     async getStockByArticle(articleId) {
@@ -61,8 +69,7 @@ class StockService {
             }
         ]);
     }
-
-
 }
 
 module.exports = new StockService();
+

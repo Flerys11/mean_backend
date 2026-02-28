@@ -5,6 +5,9 @@ const auth = require("../middlewares/auth.middlewares");
 router.use(auth);
 
 router.post("/", controller.create);
+router.get("/", controller.findPending);
+router.put("/status/:id", controller.updateVersionToOne);
+router.put("/annuler/:id", controller.cancel);
 router.get("/stats/:type", controller.getStats);
 
 module.exports = router;
