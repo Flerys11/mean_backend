@@ -1,6 +1,23 @@
 const ArticleService = require("../services/Article.service");
 
 class ArticleController {
+
+    async findByBoutique(req, res, next) {
+        try {
+            const { page, limit } = req.query;
+            const id_boutique = req.params.id_boutique;
+
+            const result = await ArticleService.findByBoutique(
+                id_boutique,
+                { page, limit }
+            );
+
+            res.status(200).json(result);
+        } catch (e) {
+            next(e);
+        }
+    }
+
     async create(req, res, next) {
         try {
             const article = await ArticleService.create(req.body);

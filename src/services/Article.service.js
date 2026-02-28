@@ -1,6 +1,17 @@
 const Article = require('../models/Article.model');
 
 class ArticleService {
+
+    async findByBoutique(id_boutique, options = {}) {
+        return await paginationService.getPaginatedData(
+            Article,
+            { id_boutique: id_boutique },
+            options,
+            5,
+            { createdAt: -1 }
+        );
+    }
+
     async create(data) {
         return await Article.create(data);
     }
