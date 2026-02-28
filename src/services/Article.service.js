@@ -1,12 +1,19 @@
 const Article = require('../models/Article.model');
+const paginationService = require('./Pagination.service');
 
 class ArticleService {
     async create(data) {
         return await Article.create(data);
     }
 
-    async findAll() {
-        return await Article.find();
+    async findAll(options = {}) {
+        return await paginationService.getPaginatedData(
+            Article,
+            {},
+            options,
+            10,
+            { createdAt: -1 }
+        );
     }
 
     async findById(id) {
@@ -14,7 +21,7 @@ class ArticleService {
     }
 
     async update(id, data) {
-        return await Article.findByIdAndUpdate(id,data, { new: true});
+        return await Article.findByIdAndUpdate(id, data, { returnDocument: 'after' });
     }
 
     async delete(id) {
@@ -23,3 +30,4 @@ class ArticleService {
 }
 
 module.exports = new ArticleService();
+

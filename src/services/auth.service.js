@@ -36,7 +36,7 @@ class AuthService {
             .populate("boutique");
 
         if (!utilisateur)
-            throw new Error("Invalid credentials");
+            throw new Error("email ou mot de passe incorrect");
 
         if (!utilisateur.boutique || utilisateur.boutique.validate === false) {
             throw new Error("Votre boutique n'est pas encore validée");
@@ -44,7 +44,7 @@ class AuthService {
 
         const valid = await bcrypt.compare(mot_de_passe, utilisateur.mot_de_passe);
         if (!valid)
-            throw new Error("Invalid credentials");
+            throw new Error("email ou mot de passe incorrect");
 
         const token = jwt.sign(
             { id: utilisateur._id, role: utilisateur.role },

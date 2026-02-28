@@ -4,19 +4,18 @@ class ArticleController {
     async create(req, res, next) {
         try {
             const article = await ArticleService.create(req.body);
-            res.status(201).json(article)
-
-        }catch (e) {
+            res.status(201).json(article);
+        } catch (e) {
             next(e);
         }
     }
 
     async findAll(req, res, next) {
         try {
-            const articles = await ArticleService.findAll();
-            res.status(201).json(articles)
-
-        }catch (e){
+            const { page, limit } = req.query;
+            const result = await ArticleService.findAll({ page, limit });
+            res.status(200).json(result);
+        } catch (e) {
             next(e);
         }
     }
@@ -24,11 +23,10 @@ class ArticleController {
     async findOne(req, res, next) {
         try {
             const id = req.params.id;
-            const article = await ArticleService.findById(id)
-            if (!article) return res.status(404).json({message: 'Article n \'  existe pas '});
-            res.status(201).json(article)
-
-        }catch (e){
+            const article = await ArticleService.findById(id);
+            if (!article) return res.status(404).json({ message: 'Article n\'existe pas' });
+            res.status(200).json(article);
+        } catch (e) {
             next(e);
         }
     }
@@ -37,9 +35,8 @@ class ArticleController {
         try {
             const id = req.params.id;
             const article = await ArticleService.update(id, req.body);
-            res.status(201).json(article)
-
-        }catch (e){
+            res.status(200).json(article);
+        } catch (e) {
             next(e);
         }
     }
@@ -47,10 +44,10 @@ class ArticleController {
     async delete(req, res, next) {
         try {
             const id = req.params.id;
-            const article = await ArticleService.delete(id)
-            if (!article) return res.status(404).json({message: 'Article n \' existe pas '});
-            res.json("Article supprimer");
-        } catch (e){
+            const article = await ArticleService.delete(id);
+            if (!article) return res.status(404).json({ message: 'Article n\'existe pas' });
+            res.status(200).json({ message: 'Article supprimé' });
+        } catch (e) {
             next(e);
         }
     }
