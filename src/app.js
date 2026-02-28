@@ -14,6 +14,7 @@ app.use("/categorie", require("./routes/Categorie.route"));
 app.use("/boutique", require("./routes/Boutique.route"));
 app.use("/commande", require("./routes/Commande.route"));
 app.use("/stock", require("./routes/Stock.route"));
+app.use("/article", require("./routes/Article.route"));
 
 app.use(require("./middlewares/erreur.middlewares"));
 
