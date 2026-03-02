@@ -7,7 +7,7 @@ const utilisateurSchema = new mongoose.Schema(
                     ref: "Boutique",
                     required: true
             },
-        type_boutique:{type: Number, required: true},
+        type_boutique:{type: mongoose.Schema.Types.ObjectId, ref: "TypeBoutique", required: true},
         email: { type: String, required: true, unique: true },
         mot_de_passe: { type: String, required: true },
         role: { type: String, default: "USER" },

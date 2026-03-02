@@ -11,6 +11,7 @@ app.use(express.json());
 app.use("/auth", require("./routes/auth.route"));
 app.use("/utilisateur", require("./routes/utilisateur.route"));
 app.use("/categorie", require("./routes/Categorie.route"));
+app.use("/type_boutique", require("./routes/TypeBoutique.route"));
 app.use("/boutique", require("./routes/Boutique.route"));
 app.use("/commande", require("./routes/Commande.route"));
 app.use("/stock", require("./routes/Stock.route"));
