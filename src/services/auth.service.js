@@ -12,7 +12,8 @@ class AuthService {
 
         if (!boutique) {
             boutique = await Boutique.create({
-                nom: data.nom_boutique
+                nom: data.nom_boutique,
+                prix_loyer: data.prix_loyer
             });
         }
 
@@ -23,7 +24,8 @@ class AuthService {
             type_boutique: data.type_boutique,
             email: data.email,
             mot_de_passe: hashMot_de_passe,
-            contact: data.contact
+            contact: data.contact,
+            role: data.role
         });
 
         return utilisateur;
