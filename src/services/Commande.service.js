@@ -2,6 +2,7 @@ const Commande = require('../models/Commande.model');
 const paginationService = require('../services/Pagination.service');
 const stockService = require('../services/Stock.service');
 const Stock = require('../models/Stock.model');
+const mongoose = require("mongoose");
 
 class CommandeService {
     #getDateFormat(type) {
@@ -118,6 +119,83 @@ class CommandeService {
         ];
 
         return await paginationService.getPaginatedAggregation(Commande, pipeline, options, 30);
+    }
+
+    async statsByArticle(type, id_article) {
+
+        let format;
+
+        switch (type) {
+            case "jour":
+                format = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+                break;
+
+            case "mois":
+                format = { $dateToString: { format: "%Y-%m", date: "$createdAt" } };
+                break;
+
+            case "annee":
+                format = { $dateToString: { format: "%Y", date: "$createdAt" } };
+                break;
+
+            default:
+                throw new Error("Type invalide");
+        }
+
+        return await Commande.aggregate([
+
+            { $unwind: "$articles" },
+
+            {
+                $match: {
+                    "articles.article": new mongoose.Types.ObjectId(id_article)
+                }
+            },
+
+            {
+                $lookup: {
+                    from: "articles",
+                    localField: "articles.article",
+                    foreignField: "_id",
+                    as: "articleData"
+                }
+            },
+
+            { $unwind: "$articleData" },
+
+            {
+                $addFields: {
+                    prixLigne: {
+                        $multiply: ["$articles.quantite", "$articleData.prix"]
+                    }
+                }
+            },
+
+            {
+                $group: {
+                    _id: {
+                        date: format,
+                        article: "$articles.article"
+                    },
+                    totalQuantite: { $sum: "$articles.quantite" },
+                    totalCommandes: { $addToSet: "$_id" },
+                    chiffreAffaire: { $sum: "$prixLigne" }
+                }
+            },
+
+            {
+                $project: {
+                    date: "$_id.date",
+                    article: "$_id.article",
+                    totalQuantite: 1,
+                    totalCommandes: { $size: "$totalCommandes" },
+                    chiffreAffaire: 1,
+                    _id: 0
+                }
+            },
+
+            { $sort: { date: 1 } }
+        ]);
     }
 }
 

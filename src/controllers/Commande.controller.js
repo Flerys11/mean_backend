@@ -67,7 +67,31 @@ class CommandeController {
             });
 
         } catch (error) {
-            next(error);
+            res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+    async getStatsByArticle(req, res) {
+        try {
+            const { type, id } = req.params;
+
+            const result = await commandeService.statsByArticle(type, id);
+
+            res.status(200).json({
+                success: true,
+                type,
+                id,
+                result
+            });
+
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                message: error.message
+            });
         }
     }
 }

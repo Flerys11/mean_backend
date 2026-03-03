@@ -9,5 +9,6 @@ router.get("/", controller.findPending);
 router.put("/status/:id", controller.updateVersionToOne);
 router.put("/annuler/:id", controller.cancel);
 router.get("/stats/:type", controller.getStats);
+router.get("/stats/:type/:id", controller.getStatsByArticle);
 
 module.exports = router;
