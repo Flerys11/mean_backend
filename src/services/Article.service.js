@@ -14,6 +14,9 @@ class ArticleService {
     }
 
     async create(data) {
+        if (data.photo && Array.isArray(data.photo)) {
+            data.photo = data.photo.filter(photo => photo && photo.length > 0);
+        }
         return await Article.create(data);
     }
 
@@ -32,6 +35,9 @@ class ArticleService {
     }
 
     async update(id, data) {
+        if (data.photo && Array.isArray(data.photo)) {
+            data.photo = data.photo.filter(photo => photo && photo.length > 0);
+        }
         return await Article.findByIdAndUpdate(id, data, { returnDocument: 'after' });
     }
 
@@ -41,4 +47,3 @@ class ArticleService {
 }
 
 module.exports = new ArticleService();
-
