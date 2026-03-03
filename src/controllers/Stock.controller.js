@@ -19,6 +19,17 @@ class StockController {
             next(e);
         }
     }
+
+    async getStockByIdBoutique(req, res, next) {
+        try {
+            const { page, limit } = req.query;
+            const id_boutique = req.params.id;
+            const result = await stockService.getStockByBoutique(id_boutique,{ page, limit });
+            res.status(200).json(result);
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 module.exports = new StockController();
