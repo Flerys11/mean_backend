@@ -15,7 +15,8 @@ class CommandeController {
     async findPending(req, res, next) {
         try {
             const { page, limit } = req.query;
-            const result = await commandeService.findPending({ page, limit });
+            const id_boutique = req.params.id;
+            const result = await commandeService.findPending(id_boutique,{ page, limit });
             res.status(200).json(result);
         } catch (e) {
             next(e);
@@ -55,10 +56,15 @@ class CommandeController {
 
     async getStats(req, res, next) {
         try {
-            const { type } = req.params;
-            const { page, limit } = req.query;
 
-            const result = await commandeService.stats(type, { page, limit });
+            const { type } = req.params;
+            const { page, limit, id_boutique } = req.query;
+
+            const result = await commandeService.stats(
+                type,
+                id_boutique,
+                { page, limit }
+            );
 
             res.status(200).json({
                 success: true,

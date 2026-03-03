@@ -2,7 +2,8 @@ const Commande = require('../models/Commande.model');
 const paginationService = require('../services/Pagination.service');
 const stockService = require('../services/Stock.service');
 const Stock = require('../models/Stock.model');
-const mongoose = require("mongoose");
+const Article = require('../models/Article.model');
+const mongoose = require('mongoose');
 
 class CommandeService {
     #getDateFormat(type) {
@@ -27,14 +28,25 @@ class CommandeService {
         );
     }
 
-    async findPending(options = {}) {
+    async findPending(id_boutique, options = {}) {
+
+        const filter = {__v : 0};
+
+        if (id_boutique) {
+            const articlesIds = await Article
+                .find({ id_boutique })
+                .distinct("_id");
+
+            filter["articles.article"] = { $in: articlesIds };
+        }
+
         return await paginationService.getPaginatedData(
             Commande,
-            { __v: 0 },
+            filter,
             options,
             10,
             { createdAt: -1 },
-            'articles.article'
+            "articles.article"
         );
     }
 
@@ -83,11 +95,14 @@ class CommandeService {
         return await Commande.create(data);
     }
 
-    async stats(type, options = {}) {
+    async stats(type, id_boutique, options = {}) {
+
         const format = this.#getDateFormat(type);
 
         const pipeline = [
+
             { $unwind: "$articles" },
+
             {
                 $lookup: {
                     from: "articles",
@@ -96,12 +111,25 @@ class CommandeService {
                     as: "articleData"
                 }
             },
+
             { $unwind: "$articleData" },
+
             {
-                $addFields: {
-                    prixLigne: { $multiply: ["$articles.quantite", "$articleData.prix"] }
+                $match: {
+                    ...(id_boutique && {
+                        "articleData.id_boutique": new mongoose.Types.ObjectId(id_boutique)
+                    })
                 }
             },
+
+            {
+                $addFields: {
+                    prixLigne: {
+                        $multiply: ["$articles.quantite", "$articleData.prix"]
+                    }
+                }
+            },
+
             {
                 $group: {
                     _id: format,
@@ -109,16 +137,23 @@ class CommandeService {
                     chiffreAffaire: { $sum: "$prixLigne" }
                 }
             },
+
             {
                 $project: {
                     totalCommandes: { $size: "$totalCommandes" },
                     chiffreAffaire: 1
                 }
             },
+
             { $sort: { _id: 1 } }
         ];
 
-        return await paginationService.getPaginatedAggregation(Commande, pipeline, options, 30);
+        return await paginationService.getPaginatedAggregation(
+            Commande,
+            pipeline,
+            options,
+            30
+        );
     }
 
     async statsByArticle(type, id_article) {
